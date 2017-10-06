@@ -279,7 +279,7 @@ namespace EventStore.Core.TransactionLog.Chunks.TFChunk
         private ReaderWorkItem CreateInternalReaderWorkItem()
         {
             var stream = new FileStream(_filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite,
-                                        ReadBufferSize, FileOptions.RandomAccess);
+                                        ReadBufferSize, FileOptions.None);
             var reader = new BinaryReader(stream);
             return new ReaderWorkItem(stream, reader, false);
         }
