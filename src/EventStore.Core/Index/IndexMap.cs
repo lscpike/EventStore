@@ -15,7 +15,7 @@ namespace EventStore.Core.Index
         private static readonly ILogger Log = LogManager.GetLoggerFor<IndexMap>();
 
         public const int IndexMapVersion = 1;
-
+        public const long MaxIndexFileSize = 50 * 1024 * 1024 * 1024L;
         public readonly int Version;
 
         public readonly long PrepareCheckpoint;
@@ -346,6 +346,14 @@ namespace EventStore.Core.Index
             {
                 if (tables[level].Count >= _maxTablesPerLevel)
                 {
+                    var mergedSize  = tables[level].Sum(_ => _.Count) * PTable.IndexEntryV4Size;
+
+                    if (mergedSize > MaxIndexFileSize)
+                    {
+                        Log.Warn("Skipping index merge level {0} as calculated new file size as {1} > {2}.", level, mergedSize, MaxIndexFileSize);
+                        continue;
+                    }
+
                     var filename = filenameProvider.GetFilenameNewTable();
                     PTable table = PTable.MergeTo(tables[level], filename, upgradeHash, existsAt, recordExistsAt, version, indexCacheDepth, skipIndexVerify);
                     CreateIfNeeded(level + 1, tables);
