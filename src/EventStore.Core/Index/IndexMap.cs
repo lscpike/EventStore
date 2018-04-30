@@ -329,7 +329,7 @@ namespace EventStore.Core.Index
             tables[0].Add(tableToAdd);
 
             var toDelete = new List<PTable>();
-            for (int level = 0; level < tables.Count; level++)
+            for (int level = 0; level < 11; level++)
             {
                 if (tables[level].Count >= _maxTablesPerLevel)
                 {
